@@ -1,27 +1,25 @@
+var keys = require('./keys.js');
+var twitter = require('twitter');
+var spotify = require('node-spotify-api');
+var request = require('request');
 var fs = require('fs');
 
-// twiiterKeys linked to keys.js file
-var keys = require('./keys.js');
 
-// npm install twiiter
-var twitter = require('twitter');
+var myTweets = new twitter({
+    consumer_key: keys.twitterKeys.consumer_key,
+    consumer_secret: keys.twitterKeys.consumer_secret,
+    access_token_key: keys.twitterKeys.access_token_key,
+    access_token_secret: keys.twitterKeys.access_token_secret
+});
 
-// var myTweets = new twitter(keys.twitterKeys);
-
-// npm install spotify
-var spotify = require('spotify');
-
-// node spotift api package
-var nodeSpotifyApi = require('node-spotify-api');
-
-// omdb api install request
-var request = require('request');
+var spotifyClient = new spotify({
+    id: keys.spotifyKeys.client_id,
+    secret: keys.spotifyKeys.client_secret
+});
 
 var searchName = process.argv[2];
 var movieThis = process.argv[3];
-var songThis = process.argv[4];
-var action = process.argv[5];
-
+var songThis = process.argv[3];
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -32,40 +30,29 @@ var action = process.argv[5];
 function getTwitter(searchName) {
 
     if (searchName === 'my-tweets') {
-        var myTweets = new twitter(keys.twitterKeys);
-        var accountName = 'schowerman';
-        var params = { screen_name: accountName };
+        var params = { screen_name: 'schowerman', count: 20 };
 
-        myTweets.get('statuses/user_timeline', params, function(err, tweets) {
+    };
+
+    myTweets.get('statuses/user_timeline', params, function(err, tweets) {
 
 
-            if (!err) {
+        if (!err) {
 
-                for (var i = 0; i < 20; i++) {
-                    console.log(" ");
-                    console.log('Tweet #' + (i + 1) + ', Date Posted: ' + tweets[i].created_at)
-                    console.log('Text: ' + tweets[i].text);
-                    console.log(" ");
-                    console.log("-------------------------------------");
-                }
-            } else {
-                console.log('error occured' + err);
+            for (var i = 0; i < tweets.length; i++) {
+                console.log(" ");
+                console.log('Tweet #' + (i + 1) + ' Date Posted : ' + tweets[i].created_at)
+                console.log('Text : ' + tweets[i].text);
+                console.log(" ");
+                console.log("-------------------------------------");
             }
+        } else {
+            console.log('error occured' + err);
+        }
 
 
-        });
-    }
-
+    });
 }
-
-// var myTweets = new twitter({
-//     consumer_key: 'sHbKrQVfMvD99RKE6m5InwhjV',
-//     consumer_secret: 'fJRxDIwl1Q4bN8FyVcec91FpaS0Znkti82SkxlRaNI9mQ4I6vV',
-//     access_token_key: '946135263625056258-WspOK4qTmZAgY3ZN7CKQNrM9FfkPaV7',
-//     access_token_secret: 'dE7ulrmBpo5DsuQkdPNPsSX1Aa49ItW6EvuDNDe4CACSM'
-// });
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -74,70 +61,33 @@ function getTwitter(searchName) {
 
 getSpotify(searchName, songThis);
 
-function upperCase (string){
-    //Capitalize first letter of each part of song name
-    return string.toUpperCase();
-}
-function titleCase(string){
-    var firstLetter = /(^|\s)[a-z]/g;
-    return string.replace(firstLetter, upperCase);
-}
-
-
 function getSpotify(searchName, songThis) {
 
     if (searchName === 'spotify-this-song') {
-        if (songThis === '') {
+        if (!songThis) {
             songThis = 'The Sign';
         }
 
-        spotify.search({ type: 'track', query: songThis }, function(err, data) {
+        var parmas = { type: 'track', query: songThis, limit: 5 };
+
+        spotifyClient.search(parmas, function(err, data) {
 
             if (err) {
                 console.log('error occured' + err);
                 return;
             }
 
-            var spotSearch = data.tracks.items[0];
-         
-
-            for (var i = 0; i < 20; i++) {
-                if (data.tracks.items[i].name == songThis) {
-                }
+            for (var i = 0; i < data.tracks.items.length; i++) {
+                console.log("Artist: " + data.artists[0].name);
+                console.log("Song: " + data.name);
+                console.log("Link: " + data.external_urls.spotify);
+                console.log("Album: " + data.album[0].name);
             }
 
-        if (foundSearch.length > 0) {
-            console.log("Artist: " + spotSearch.artists[0].name);
-            console.log("Song: " + spotSearch.name);
-            console.log("Link: " + spotSearch.external_urls.spotify);
-            console.log("Album: " + spotSearch.album[0].name);
-        }
-        else if (foundSearch.length == 0){
-            console.log("Spofity could not locate your search!");
-        }
-
-
-            spotify = require('node-spotify-api');
-
-            spotify = new spotify({
-                id: '118dd869e80747f187cd15bb1ac9c4b5',
-                secret: 'ce8946fa66c045ba9b4352c87eac116d'
-
-            });
 
         });
-
     }
 }
-
-
-
-
-// Artist(s) ---- key - 
-// The song's name ---- key - name
-// A preview link of the song from Spotify
-// The album that the song is from ---- https://api.spotify.com/v1/albums/{id}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,18 +120,47 @@ function getOMDB(searchName, movieThis) {
             console.log("");
             console.log("");
             console.log("Title : " + JSON.parse(data).Title);
+            console.log("");
             console.log("Year Released : " + JSON.parse(data).Year);
+            console.log("");
             console.log("IMDB Rating : " + JSON.parse(data).imdbRating);
+            console.log("");
             console.log("Rotten Tomatoes Rating : " + JSON.parse(data).tomatoRating);
+            console.log("");
             console.log("Country Produced : " + JSON.parse(data).Country);
+            console.log("");
             console.log("Language : " + JSON.parse(data).Language);
+            console.log("");
             console.log("Plot : " + JSON.parse(data).Plot);
+            console.log("");
             console.log("Actors : " + JSON.parse(data).Actors);
             console.log("");
             console.log("");
 
+
         });
-
     }
+}
 
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+getRandom(searchName);
+
+
+function getRandom(searchName) {
+
+    if (searchName === 'do-what-it-says') {
+
+        fs.readFile("random.txt", 'utf8', function(err, data) {
+
+            if (err) {
+                console.log("There is an error");
+            } else {
+                doWhatResults = data.split(",");
+                getRandom(doWhatResults[0], doWhatResults[1]);
+                console.log(doWhatResults);
+            }
+        });
+    }
 }
