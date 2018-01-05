@@ -15,17 +15,6 @@ exports.spotify = {
     secret: process.env.spotify_secret
 }
 
-// module.exports = {
-//     twitter: twitterKeys,
-//     spotify: spotifyKeys
-// }
-
-// var spotify = new Spotify(keys.spotify);
-// var client = new Twitter(keys.twitter);
-
-
-
-
 
 // twitter == alias - bard schowerman / password - Ludwig1019 / username - schowerman
 
@@ -38,8 +27,8 @@ exports.spotify = {
 // Owner ID	946135263625056258
 
 
+
 // spotify == password - Ludwig1019 / username - schowerman
 
-// spotify
 // client id - 118dd869e80747f187cd15bb1ac9c4b5
 // client secret - ce8946fa66c045ba9b4352c87eac116d

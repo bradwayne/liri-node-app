@@ -5,10 +5,9 @@ var spotify = require('node-spotify-api');
 var request = require('request');
 var fs = require('fs');
 
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
-
-var songSearch = new spotify(keys.spotify);
+var spotifySearch = new spotify(keys.spotify);
 var myTweets = new twitter(keys.twitter);
 
 console.log(process.env.twitter_consumer_key);
@@ -17,30 +16,6 @@ console.log(process.env.twitter_consumer_secret)
 console.log(process.env.spotify_id);
 console.log(process.env.spotify_secret);
 
-
-
-
-
-// var myTweets = new twitter({
-//     consumer_key: process.env.twitter.consumer_key,
-//     consumer_secret: process.env.twitter.consumer_secret,
-//     access_token_key: process.env.twitter.access_token_key,
-//     access_token_secret: process.env.twitter.access_token_secret
-// });
-
-// console.log("consumer key : " + keys.twitter.consumer_key);
-// console.log("consumer secret : " + keys.twitter.consumer_secret);
-
-//////////////////////////////////////////////////////////////////
-
-// var spotifyClient = new spotify({
-//     id: keys.spotify.client_id,
-//     secret: keys.spotify.client_secret
-// })
-
-// console.log("client id : " + keys.spotify.client_id);
-// console.log("client secret : " + keys.spotify.client_secret);
-
 /////////////////////////////////////////////////////////////////
 
 var searchName = process.argv[2];
@@ -48,8 +23,6 @@ var item = '';
 
 for (var i = 3; i < process.argv.length; i++) {
     if (process.argv[i].trim()) {
-        // first trim all blank space before and after the process.argv[i], then replace ALL double quote with empty string,
-        // and then, replace ALL single quote with empty string.
         process.argv[i].trim().replace(/"/g, "").replace(/'/g, '');
         item += process.argv[i].trim() + " ";
     }
@@ -57,7 +30,7 @@ for (var i = 3; i < process.argv.length; i++) {
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-// twitter npm
+// twitter search
 
 function getTwitter(searchName, item) {
 
@@ -89,32 +62,28 @@ function getTwitter(searchName, item) {
     });
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 
-// spotify npm
-
-
+// spotify search
 
 function getSpotify(searchName, item) {
 
     console.log("");
     console.log('retrieving your Spotify search for : ' + item);
 
-    if (!item) {
-        item = 'The Sign';
+    if (item === '') {
+        item = 'breaking the law';
     }
 
     var parmas = { type: 'track', query: item, limit: 1 };
 
 
-    songSearch.search(parmas, function(err, data) {
+    spotifySearch.search(parmas, function(err, data) {
 
         if (err) {
             console.log('error occured ' + err);
             return;
         }
-        // console.log(JSON.stringify(data,null,2));
 
         console.log("");
         console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
@@ -125,18 +94,12 @@ function getSpotify(searchName, item) {
         console.log("");
         console.log("Album: " + data.tracks.items[0].album.name);
 
-        // console.log(zooAnimals[4]);
-
     });
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
 //omdb movie search
-
-
-// run a request to the OMDB API with the movie specified
 
 function getMovie(searchName, item) {
 
@@ -149,13 +112,11 @@ function getMovie(searchName, item) {
 
     request("http://www.omdbapi.com/?t=" + item + "&y=&plot=short&apikey=trilogy", function(err, response, data) {
 
-        // error check === 200 means good to proceed to next step
         if (!err && response.statusCode === 200) {} else {
             console.log('error occured' + err);
             return;
         }
 
-        // if no errors console.log retreived data
         console.log("");
         console.log("");
         console.log("Title : " + JSON.parse(data).Title);
@@ -176,7 +137,6 @@ function getMovie(searchName, item) {
 
     });
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
