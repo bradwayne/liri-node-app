@@ -1,27 +1,47 @@
+require("dotenv").config();
 var keys = require('./keys.js');
 var twitter = require('twitter');
 var spotify = require('node-spotify-api');
 var request = require('request');
 var fs = require('fs');
 
-console.log("consumer key : " + keys.consumer_key);
-console.log("consumer secret : " + keys.consumer_secret);
+/////////////////////////////////////////////////////////////////
 
-var myTweets = new twitter({
-    consumer_key: keys.consumer_key,
-    consumer_secret: keys.consumer_secret,
-    access_token_key: keys.access_token_key,
-    access_token_secret: keys.access_token_secret
-});
 
-// console.log("client id : " + keys.client_id);
-// console.log("client secret : " + keys.client_secret);
+var songSearch = new spotify(keys.spotify);
+var myTweets = new twitter(keys.twitter);
+
+console.log(process.env.twitter_consumer_key);
+console.log(process.env.twitter_consumer_secret)
+
+console.log(process.env.spotify_id);
+console.log(process.env.spotify_secret);
+
+
+
+
+
+// var myTweets = new twitter({
+//     consumer_key: process.env.twitter.consumer_key,
+//     consumer_secret: process.env.twitter.consumer_secret,
+//     access_token_key: process.env.twitter.access_token_key,
+//     access_token_secret: process.env.twitter.access_token_secret
+// });
+
+// console.log("consumer key : " + keys.twitter.consumer_key);
+// console.log("consumer secret : " + keys.twitter.consumer_secret);
+
+//////////////////////////////////////////////////////////////////
 
 // var spotifyClient = new spotify({
-//     id: keys.client_id,
-//     secret: keys.client_secret
+//     id: keys.spotify.client_id,
+//     secret: keys.spotify.client_secret
 // })
 
+// console.log("client id : " + keys.spotify.client_id);
+// console.log("client secret : " + keys.spotify.client_secret);
+
+/////////////////////////////////////////////////////////////////
 
 var searchName = process.argv[2];
 var item = '';
@@ -52,15 +72,18 @@ function getTwitter(searchName, item) {
 
         if (!err) {
 
-            for (var i = 0; i < tweets.length; i++) {
-                    console.log(" ");
-                    console.log('Tweet #' + (i + 1) + ' Date Posted : ' + tweets[i].created_at)
-                    console.log('Text : ' + tweets[i].text);
-                    console.log(" ");
-                    console.log("-------------------------------------");
-                }
+            var counter = 1;
+            for (var i = tweets.length - 1; i >= 0; i--) {
+                console.log(" ");
+                console.log('Tweet #' + (counter) + ' Date Posted : ' + tweets[i].created_at)
+                console.log('Text : ' + tweets[i].text);
+                console.log(" ");
+                console.log("-------------------------------------");
+                counter++;
+            }
         } else {
             console.log('error occured' + err);
+            return;
         }
 
     });
@@ -73,36 +96,39 @@ function getTwitter(searchName, item) {
 
 
 
-// function getSpotify(searchName, item) {
+function getSpotify(searchName, item) {
 
-//     console.log("");
-//     console.log('retrieving your Spotify search for : ' + item);
+    console.log("");
+    console.log('retrieving your Spotify search for : ' + item);
 
-//     if (!item) {
-//         item = 'The Sign';
-//     }
+    if (!item) {
+        item = 'The Sign';
+    }
 
-//     var parmas = { type: 'track', query: item, limit: 5 };
-
-
-//     spotifyClient.search(parmas, function(err, data) {
-
-//         if (err) {
-//             console.log('error occured ' + err);
-//             return;
-//         }
-
-//         for (var i = 0; i < data.tracks.items.length; i++) {
-
-//             console.log("Artist: " + data.tracks.items[i].artist.name);
-//             console.log("Song: " + data.track.items[i].name);
-//             console.log("Link: " + data.tracks.items[i].external_urls.spotify);
-//             console.log("Album: " + data.tracks.items[i].album.name);
-//         }
+    var parmas = { type: 'track', query: item, limit: 1 };
 
 
-//     });
-// }
+    songSearch.search(parmas, function(err, data) {
+
+        if (err) {
+            console.log('error occured ' + err);
+            return;
+        }
+        // console.log(JSON.stringify(data,null,2));
+
+        console.log("");
+        console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
+        console.log("");
+        console.log("Song: " + data.tracks.items[0].name);
+        console.log("");
+        console.log("Link: " + data.tracks.items[0].preview_url);
+        console.log("");
+        console.log("Album: " + data.tracks.items[0].album.name);
+
+        // console.log(zooAnimals[4]);
+
+    });
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,8 +173,6 @@ function getMovie(searchName, item) {
         console.log("Plot : " + JSON.parse(data).Plot);
         console.log("");
         console.log("Actors : " + JSON.parse(data).Actors);
-        console.log("");
-        console.log("");
 
     });
 }
@@ -173,12 +197,8 @@ function getRandom(searchName, songThis) {
         var j = 0;
         for (j; j < doWhatArr.length; j++) {
 
-            if (doWhatArr[j] === 'my tweets') {
-                getTwitter(doWhatArr[j]);
-            } else if (doWhatArr[j] === 'spotify-this-song') {
+            if (doWhatArr[j] === 'spotify-this-song') {
                 getSpotify(doWhatArr[j], doWhatArr[j + 1]);
-            } else if (doWhatArr[j] === 'movie-this') {
-                getMovie(doWhatArr[j], doWhatArr[j + 1]);
             }
         }
     });
