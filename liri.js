@@ -7,8 +7,8 @@ var fs = require('fs');
 
 ////////////////////////////////////////////////////////////////
 
-var spotifySearch = new spotify(keys.spotify);
 var myTweets = new twitter(keys.twitter);
+var spotifySearch = new spotify(keys.spotify);
 
 console.log(process.env.twitter_consumer_key);
 console.log(process.env.twitter_consumer_secret)
@@ -41,7 +41,7 @@ function getTwitter(searchName, item) {
     var params = { screen_name: 'schowerman', count: 20 };
 
 
-    myTweets.get('statuses/user_timeline', params, function(err, tweets) {
+    myTweets.get('statuses/user_timeline', params, function (err, tweets) {
 
         if (!err) {
 
@@ -78,7 +78,7 @@ function getSpotify(searchName, item) {
     var parmas = { type: 'track', query: item, limit: 1 };
 
 
-    spotifySearch.search(parmas, function(err, data) {
+    spotifySearch.search(parmas, function (err, data) {
 
         if (err) {
             console.log('error occured ' + err);
@@ -110,9 +110,9 @@ function getMovie(searchName, item) {
         item = 'Mr. Nobody';
     }
 
-    request("http://www.omdbapi.com/?t=" + item + "&y=&plot=short&apikey=trilogy", function(err, response, data) {
+    request("http://www.omdbapi.com/?t=" + item + "&y=&plot=short&apikey=trilogy", function (err, response, data) {
 
-        if (!err && response.statusCode === 200) {} else {
+        if (!err && response.statusCode === 200) { } else {
             console.log('error occured' + err);
             return;
         }
@@ -121,11 +121,13 @@ function getMovie(searchName, item) {
         console.log("");
         console.log("Title : " + JSON.parse(data).Title);
         console.log("");
+        console.log("Rated : " + JSON.parse(data).Rated)
+        console.log("");
         console.log("Year Released : " + JSON.parse(data).Year);
         console.log("");
         console.log("IMDB Rating : " + JSON.parse(data).imdbRating);
         console.log("");
-        console.log("Rotten Tomatoes Rating : " + JSON.parse(data).tomatoRating);
+        console.log("Rotten Tomatoes Rating : " + JSON.parse(data).Ratings[1].Value.tomatoRating);
         console.log("");
         console.log("Country Produced : " + JSON.parse(data).Country);
         console.log("");
@@ -144,7 +146,7 @@ function getMovie(searchName, item) {
 
 function getRandom(searchName, songThis) {
 
-    fs.readFile("random.txt", 'utf8', function(err, data) {
+    fs.readFile("random.txt", 'utf8', function (err, data) {
 
         if (err) {
             console.log("There is an error");
