@@ -112,10 +112,6 @@ function getMovie(searchName, item) {
 
     request("http://www.omdbapi.com/?t=" + item + "&y=&plot=short&apikey=trilogy", function (err, response, data) {
 
-        if (!err && response.statusCode === 200) { } else {
-            console.log('error occured' + err);
-            return;
-        }
 
         console.log("");
         console.log("");
@@ -127,7 +123,7 @@ function getMovie(searchName, item) {
         console.log("");
         console.log("IMDB Rating : " + JSON.parse(data).imdbRating);
         console.log("");
-        console.log("Rotten Tomatoes Rating : " + JSON.parse(data).Ratings[1].Value.tomatoRating);
+        console.log("Rotten Tomatoes Rating : " + JSON.parse(data).Ratings[1].Value);
         console.log("");
         console.log("Country Produced : " + JSON.parse(data).Country);
         console.log("");
