@@ -5,6 +5,9 @@ This node interface will accept the following commands.
 
 1) node liri.js my-tweets
    This will display the last 20 tweets that is connected to the key. At the moment the key is linked to my dummy twitter account.
+   a) Tweet # - the number of tweets staring with 1 being first tweet ever
+   b) Date Posted - directly after tweet # giving you weekday, month, day, hour and year
+   c) Text - the tweet text
 
 2) node liri.js spotify-this-song "song to search here"
    After you input your song search, node will display the following information
