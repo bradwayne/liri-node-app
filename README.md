@@ -14,7 +14,7 @@ This node interface will accept the following commands.
        a) Artist - the artist or band
        b) Song - the song you just searched
        c) Link - an html link to the song or snippet of song
-       d) Album - the album the this song can be found on
+       d) Album - the album this song can be found on
 
 3) node liri.js movie-this "movie to search here"
    After you input your movie search, node will display the following information
